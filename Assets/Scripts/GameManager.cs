@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
       {     
         int index = Random.Range(0, moles.Count);
         
-        if (!currentMoles.Contains(moles[index]) && !moles[index].grown) 
+        if (!currentMoles.Contains(moles[index])) // && !moles[index].grown) 
         {
           currentMoles.Add(moles[index]);
           moles[index].Activate(score / 100);

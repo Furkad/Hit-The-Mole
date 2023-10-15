@@ -9,13 +9,13 @@ public class moleGenerate : MonoBehaviour
 {
     [SerializeField] private Sprite mole;
     [SerializeField] private GameManager gameManager;
-    [SerializeField] private GameObject plant;
+    //[SerializeField] private GameObject plant;
 
-    public BoxCollider2D plantBox;
+    //public BoxCollider2D plantBox;
 
 
-    private Vector2 startPosition = new Vector2(0f, -2.56f);
-    private Vector2 endPosition = Vector2.zero;
+    public Vector2 startPosition;
+    public Vector2 endPosition;
     
     public float showDuration = 0.5f;
     public float duration = 1f;
@@ -38,7 +38,7 @@ public class moleGenerate : MonoBehaviour
 
     private IEnumerator ShowHide(Vector2 start, Vector2 end)
     {
-        plantBox.enabled = false;
+        //plantBox.enabled = false;
         transform.localPosition = start;
 
         
@@ -72,7 +72,7 @@ public class moleGenerate : MonoBehaviour
         boxCollider2D.offset = boxOffsetHidden;
         boxCollider2D.size = boxSizeHidden;        
         
-        plantBox.enabled = true;
+        //plantBox.enabled = true;
         yield return new WaitForSeconds(duration);
 
         if (hittable)
@@ -82,68 +82,68 @@ public class moleGenerate : MonoBehaviour
         }
     }
 
-    float timerGrown = 180.0f;
-    public bool attack = false;
-    public bool grown;
-    public void placePlant()
-    {
-        StopAllCoroutines();
-        grown = true;
+    //float timerGrown = 180.0f;
+    //public bool attack = false;
+    //public bool grown;
+    //public void placePlant()
+    //{
+    //    StopAllCoroutines();
+    //    grown = true;
 
-        plant.SetActive(true);
-        float setTime = 180.0f;
-        StartCoroutine(grownPlant(setTime));
+    //    plant.SetActive(true);
+    //    float setTime = 180.0f;
+    //    StartCoroutine(grownPlant(setTime));
 
-    }
+    //}
 
-    private IEnumerator grownPlant(float setTime)
-    {
-        while(grown)
-        {
-            Debug.Log(grown);
-            float curTime1 = timerGrown;
-            float curTime2 = setTime;
-            while (curTime1 >= 0)
-            {
-                curTime1 -= Time.deltaTime;
-            }
-            Debug.Log(curTime1);
-            yield return new WaitForSeconds(duration * 2);
-            if (curTime1 <= 0)
-            {
-                attack = true;
-            }
-            Debug.Log(attack);
-            while (attack && (curTime2 > 0))
-            {
-                plant.GetComponent<SpriteRenderer>().color = Color.black;                
-                curTime2 -= Time.deltaTime;
-            }
-            yield return new WaitForSeconds(duration * 2);
-            Debug.Log(curTime2);
-            if (attack && curTime2 <= 0)
-            {
-                Debug.Log("st");
-                plant.SetActive(false);
-                grown = false;
-                attack= false;
-                StopAllCoroutines();
-                Activate(2);
-                Debug.Log("fn");
-            }
-            else
-            {
-                plant.GetComponent<SpriteRenderer>().color = Color.green;
-                curTime2 = setTime;
-                curTime1 = timerGrown;
-                attack = false;
-            }
-            yield return null;
-        }
+    //private IEnumerator grownPlant(float setTime)
+    //{
+    //    while(grown)
+    //    {
+    //        Debug.Log(grown);
+    //        float curTime1 = timerGrown;
+    //        float curTime2 = setTime;
+    //        while (curTime1 >= 0)
+    //        {
+    //            curTime1 -= Time.deltaTime;
+    //        }
+    //        Debug.Log(curTime1);
+    //        yield return new WaitForSeconds(duration * 2);
+    //        if (curTime1 <= 0)
+    //        {
+    //            attack = true;
+    //        }
+    //        Debug.Log(attack);
+    //        while (attack && (curTime2 > 0))
+    //        {
+    //            plant.GetComponent<SpriteRenderer>().color = Color.black;                
+    //            curTime2 -= Time.deltaTime;
+    //        }
+    //        yield return new WaitForSeconds(duration * 2);
+    //        Debug.Log(curTime2);
+    //        if (attack && curTime2 <= 0)
+    //        {
+    //            Debug.Log("st");
+    //            plant.SetActive(false);
+    //            grown = false;
+    //            attack= false;
+    //            StopAllCoroutines();
+    //            Activate(2);
+    //            Debug.Log("fn");
+    //        }
+    //        else
+    //        {
+    //            plant.GetComponent<SpriteRenderer>().color = Color.green;
+    //            curTime2 = setTime;
+    //            curTime1 = timerGrown;
+    //            attack = false;
+    //        }
+    //        yield return null;
+    //    }
         
 
         
-    }
+    //}
 
     public void Hide()
     {

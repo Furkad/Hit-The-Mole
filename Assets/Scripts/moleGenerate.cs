@@ -11,7 +11,7 @@ public class moleGenerate : MonoBehaviour
     [SerializeField] private GameManager gameManager;
     //[SerializeField] private GameObject plant;
 
-    //public BoxCollider2D plantBox;
+    //[SerializeField] private BoxCollider2D plantBox;
 
 
     public Vector2 startPosition;
@@ -34,14 +34,17 @@ public class moleGenerate : MonoBehaviour
     private int lives;
     private int moleIndex = 0;
 
+    // Plant Parameters
+    //float timerGrown = 180.0f;
+    //public bool attack = false;
+    //public bool grown = false;
+
 
 
     private IEnumerator ShowHide(Vector2 start, Vector2 end)
     {
-        //plantBox.enabled = false;
         transform.localPosition = start;
 
-        
         float elapsed = 0f;
         while (elapsed < showDuration)
         {
@@ -70,9 +73,9 @@ public class moleGenerate : MonoBehaviour
 
         transform.localPosition = start;
         boxCollider2D.offset = boxOffsetHidden;
-        boxCollider2D.size = boxSizeHidden;        
-        
-        //plantBox.enabled = true;
+        boxCollider2D.size = boxSizeHidden;
+
+        gameManager.plants[moleIndex].ChangeBoxCollider2DState();
         yield return new WaitForSeconds(duration);
 
         if (hittable)
@@ -82,23 +85,22 @@ public class moleGenerate : MonoBehaviour
         }
     }
 
-    //float timerGrown = 180.0f;
-    //public bool attack = false;
-    //public bool grown;
-    //public void placePlant()
+    
+    //public void PlacePlant()
     //{
     //    StopAllCoroutines();
     //    grown = true;
 
-    //    plant.SetActive(true);
+    //    Instantiate(plant, new Vector2(endPosition.x, endPosition.y), Quaternion.identity);
+    //    //plant.SetActive(true);
     //    float setTime = 180.0f;
-    //    StartCoroutine(grownPlant(setTime));
+    //    StartCoroutine(GrownPlant(setTime));
 
     //}
 
-    //private IEnumerator grownPlant(float setTime)
+    //private IEnumerator GrownPlant(float setTime)
     //{
-    //    while(grown)
+    //    while (grown)
     //    {
     //        Debug.Log(grown);
     //        float curTime1 = timerGrown;
@@ -109,16 +111,16 @@ public class moleGenerate : MonoBehaviour
     //        }
     //        Debug.Log(curTime1);
     //        yield return new WaitForSeconds(duration * 2);
-    //        if (curTime1 <= 0)
+    //        /*if (curTime1 <= 0)
     //        {
     //            attack = true;
     //        }
     //        Debug.Log(attack);
     //        while (attack && (curTime2 > 0))
     //        {
-    //            plant.GetComponent<SpriteRenderer>().color = Color.black;                
+    //            plant.GetComponent<SpriteRenderer>().color = Color.black;
     //            curTime2 -= Time.deltaTime;
-    //        }
+    //        }*/
     //        yield return new WaitForSeconds(duration * 2);
     //        Debug.Log(curTime2);
     //        if (attack && curTime2 <= 0)
@@ -126,7 +128,7 @@ public class moleGenerate : MonoBehaviour
     //            Debug.Log("st");
     //            plant.SetActive(false);
     //            grown = false;
-    //            attack= false;
+    //            attack = false;
     //            StopAllCoroutines();
     //            Activate(2);
     //            Debug.Log("fn");
@@ -140,9 +142,6 @@ public class moleGenerate : MonoBehaviour
     //        }
     //        yield return null;
     //    }
-        
-
-        
     //}
 
     public void Hide()
@@ -171,6 +170,7 @@ public class moleGenerate : MonoBehaviour
                 StopAllCoroutines();
                 StartCoroutine(QuickHide());
                 hittable = false;
+                gameManager.plants[moleIndex].ChangeBoxCollider2DState();
             }
         }
 
@@ -204,5 +204,10 @@ public class moleGenerate : MonoBehaviour
     public void SetIndex(int index)
     {
         moleIndex = index;
+    }
+
+    public bool GetHittableState()
+    {
+        return hittable;
     }
 }

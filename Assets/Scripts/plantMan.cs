@@ -14,7 +14,6 @@ public class plantMan : MonoBehaviour
                 if (gameManager.score > 150)
                 {
                     gameManager.score -= 150;
-                    //molgen.placePlant();
                 }
             
         }       

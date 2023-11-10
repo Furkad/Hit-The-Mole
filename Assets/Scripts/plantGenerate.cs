@@ -4,34 +4,60 @@ using UnityEngine;
 
 public class plantGenerate : MonoBehaviour
 {
-    [SerializeField] private Sprite plant;
+    [SerializeField] private List<Sprite> plant;
     [SerializeField] private GameManager gameManager;
 
-    public float duration = 1f;
+    public float timer = 0f;
 
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider2D;
 
     // Plant Parameters
-    float timerGrown = 180.0f;
+    float timerGrown = 10.0f;
+    private int growState = 0;
     private bool attack = false;
-    private bool grown = false;
+    private bool placed = false;
     private int plantIndex = 0;
 
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = plant[0];
         spriteRenderer.enabled = false;
         boxCollider2D = GetComponent<BoxCollider2D>();
         boxCollider2D.enabled = true;
     }
 
+    private void Update()
+    {
+        if (placed && growState != 3)
+        {
+            timer += Time.deltaTime;
+            if (timer >= timerGrown && growState != 3)
+            {
+                Grow();
+                timer = 0f;
+            }
+        }
+    }
+
     public void PlacePlant()
     {
         StopAllCoroutines();
-        grown = true;
+        placed = true;
         spriteRenderer.enabled = true;
+    }
+
+    public void Attack()
+    {
+
+    }
+
+    public void Grow()
+    {
+        growState++;
+        spriteRenderer.sprite = plant[growState];
     }
 
     //private IEnumerator GrownPlant(float setTime)
@@ -84,14 +110,13 @@ public class plantGenerate : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (!gameManager.CheckIsMoleCurrent(plantIndex) && gameManager.score >= 150 && !grown)
+            if (!gameManager.CheckIsMoleCurrent(plantIndex) && gameManager.score >= 150 && !placed)
             {
                 gameManager.SubtractScore(plantIndex);
                 StopAllCoroutines();
                 PlacePlant();
             }
         }
-
     }
 
     public void SetIndex(int index)
@@ -99,9 +124,9 @@ public class plantGenerate : MonoBehaviour
         plantIndex = index;
     }
 
-    public bool GetGrownState()
+    public int GetGrowState()
     {
-        return grown;
+        return growState;
     }
 
     public void ChangeBoxCollider2DState()

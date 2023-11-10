@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
       bool isWon = true;
       foreach (plantGenerate plant in plants)
       {
-                if (!plant.GetGrownState())
+                if (plant.GetGrowState() != 3)
                 {
                     isWon = false;
                     break;

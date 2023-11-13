@@ -50,8 +50,18 @@ public class GameManager : MonoBehaviour
             if (isWon)
                 return;
       currentTime += Time.deltaTime;
-      //if (currentMoles.Count <= moles.Count/2)
-      if (currentTime >= timer)
+
+            bool allPlantsPlaced = true;
+            foreach (plantGenerate plant in plants)
+            {
+                if (!plant.GetPlacedState())
+                {
+                    allPlantsPlaced = false;
+                    break;
+                }
+            }
+
+            if (currentTime >= timer && !allPlantsPlaced)
       {
         timer = Random.Range(0, 3f);
         currentTime = 0f;
@@ -78,12 +88,20 @@ public class GameManager : MonoBehaviour
     currentMoles.Remove(moles[moleIndex]);
   }
 
-  public void SubtractScore(int plantIndex)
+  public void SubtractScore(int plantIndex, bool fromPlacement)
   {
         score -= 150;
         scoreText.text = $"{score}";
-        currentPlants.Add(plants[plantIndex]);
-        currentMoles.Remove(moles[plantIndex]);
+        if (fromPlacement)
+        {
+            currentMoles.Remove(moles[plantIndex]);
+            currentPlants.Add(plants[plantIndex]);
+        }
+        else
+        {
+            currentPlants.Remove(plants[plantIndex]);
+        }
+        
   }
 
   public void Missed(int moleIndex) 

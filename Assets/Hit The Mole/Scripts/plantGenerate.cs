@@ -7,13 +7,16 @@ public class plantGenerate : MonoBehaviour
     [SerializeField] private List<Sprite> plant;
     [SerializeField] private GameManager gameManager;
 
-    public float timer = 0f;
+    public float timeGrow = 0f;
+    public float timeAttack = 0f;
 
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider2D;
 
     // Plant Parameters
     float timerGrown = 10.0f;
+    float timerDeath = 7f;
+    float timerAttack;
     private int growState = 0;
     private bool attack = false;
     private bool placed = false;
@@ -27,34 +30,71 @@ public class plantGenerate : MonoBehaviour
         spriteRenderer.enabled = false;
         boxCollider2D = GetComponent<BoxCollider2D>();
         boxCollider2D.enabled = true;
+        timerAttack = Random.Range(5f, 15f);
     }
 
     private void Update()
     {
         if (placed && growState != 3)
         {
-            timer += Time.deltaTime;
-            if (timer >= timerGrown && growState != 3)
+            timeGrow += Time.deltaTime;
+            if (timeGrow >= timerGrown && growState != 3)
             {
                 Grow();
-                timer = 0f;
+                timeGrow = 0f;
+            }
+        }
+
+        if (placed && !attack)
+        {
+            timeAttack += Time.deltaTime;
+            if (timeAttack >= timerAttack)
+            {
+                StartCoroutine(Attack());
+                attack = true;
+                timeAttack = 0f;
             }
         }
     }
 
     public void PlacePlant()
     {
-        StopAllCoroutines();
         placed = true;
         spriteRenderer.enabled = true;
     }
 
-    public void Attack()
+    private IEnumerator Attack()
     {
-
+        Color beginColor = spriteRenderer.color;
+        float deathTime = 0f;
+        float colorTimer = 0.5f;
+        float colorTime = 0f;
+        while (deathTime < timerDeath)
+        {
+            deathTime += Time.deltaTime;
+            colorTime += Time.deltaTime;
+            if (colorTime >= colorTimer)
+            {
+                if (spriteRenderer.color == beginColor)
+                    spriteRenderer.color = Color.red;
+                else
+                    spriteRenderer.color = beginColor;
+                colorTime = 0f;
+            }
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.25f);
+        attack = false;
+        placed = false;
+        growState = 0;
+        spriteRenderer.color = Color.white;
+        spriteRenderer.sprite = plant[0];
+        spriteRenderer.enabled = false;
+        timerAttack = Random.Range(5f, 15f);
+        gameManager.SubtractScore(plantIndex, false);
     }
 
-    public void Grow()
+    private void Grow()
     {
         growState++;
         spriteRenderer.sprite = plant[growState];
@@ -112,9 +152,17 @@ public class plantGenerate : MonoBehaviour
         {
             if (!gameManager.CheckIsMoleCurrent(plantIndex) && gameManager.score >= 150 && !placed)
             {
-                gameManager.SubtractScore(plantIndex);
+                gameManager.SubtractScore(plantIndex, true);
                 StopAllCoroutines();
                 PlacePlant();
+                return;
+            }
+
+            if (placed && attack)
+            {
+                StopAllCoroutines();
+                attack = false;
+                spriteRenderer.color = Color.white;
             }
         }
     }
@@ -127,6 +175,11 @@ public class plantGenerate : MonoBehaviour
     public int GetGrowState()
     {
         return growState;
+    }
+
+    public bool GetPlacedState()
+    {
+        return placed;
     }
 
     public void ChangeBoxCollider2DState()

@@ -9,9 +9,7 @@ public class moleGenerate : MonoBehaviour
 {
     [SerializeField] private Sprite mole;
     [SerializeField] private GameManager gameManager;
-    //[SerializeField] private GameObject plant;
-
-    //[SerializeField] private BoxCollider2D plantBox;
+    [SerializeField] private GameObject hammer;
 
 
     public Vector2 startPosition;
@@ -33,11 +31,6 @@ public class moleGenerate : MonoBehaviour
     private MoleType moleType;
     private int lives;
     private int moleIndex = 0;
-
-    // Plant Parameters
-    //float timerGrown = 180.0f;
-    //public bool attack = false;
-    //public bool grown = false;
 
 
 
@@ -85,65 +78,6 @@ public class moleGenerate : MonoBehaviour
         }
     }
 
-    
-    //public void PlacePlant()
-    //{
-    //    StopAllCoroutines();
-    //    grown = true;
-
-    //    Instantiate(plant, new Vector2(endPosition.x, endPosition.y), Quaternion.identity);
-    //    //plant.SetActive(true);
-    //    float setTime = 180.0f;
-    //    StartCoroutine(GrownPlant(setTime));
-
-    //}
-
-    //private IEnumerator GrownPlant(float setTime)
-    //{
-    //    while (grown)
-    //    {
-    //        Debug.Log(grown);
-    //        float curTime1 = timerGrown;
-    //        float curTime2 = setTime;
-    //        while (curTime1 >= 0)
-    //        {
-    //            curTime1 -= Time.deltaTime;
-    //        }
-    //        Debug.Log(curTime1);
-    //        yield return new WaitForSeconds(duration * 2);
-    //        /*if (curTime1 <= 0)
-    //        {
-    //            attack = true;
-    //        }
-    //        Debug.Log(attack);
-    //        while (attack && (curTime2 > 0))
-    //        {
-    //            plant.GetComponent<SpriteRenderer>().color = Color.black;
-    //            curTime2 -= Time.deltaTime;
-    //        }*/
-    //        yield return new WaitForSeconds(duration * 2);
-    //        Debug.Log(curTime2);
-    //        if (attack && curTime2 <= 0)
-    //        {
-    //            Debug.Log("st");
-    //            plant.SetActive(false);
-    //            grown = false;
-    //            attack = false;
-    //            StopAllCoroutines();
-    //            Activate(2);
-    //            Debug.Log("fn");
-    //        }
-    //        else
-    //        {
-    //            plant.GetComponent<SpriteRenderer>().color = Color.green;
-    //            curTime2 = setTime;
-    //            curTime1 = timerGrown;
-    //            attack = false;
-    //        }
-    //        yield return null;
-    //    }
-    //}
-
     public void Hide()
     {
         transform.localPosition = startPosition;
@@ -153,11 +87,27 @@ public class moleGenerate : MonoBehaviour
 
     private IEnumerator QuickHide()
     {
-        yield return new WaitForSeconds(0.25f);
+        hammer.GetComponent<SpriteRenderer>().enabled = true;
+
+        float elapsed = 0f;
+        Quaternion start = hammer.transform.rotation;
+        Quaternion end = Quaternion.AngleAxis(60f, new Vector3(0f, 0f, 1f));
+        while (elapsed < showDuration)
+        {
+            hammer.transform.rotation = Quaternion.Lerp(start, end, elapsed / showDuration - 0.5f);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        hammer.GetComponent<SpriteRenderer>().enabled = false;
+        hammer.transform.rotation = start;
+        //yield return new WaitForSeconds(0.25f);
+
         if (!hittable)
         {
             Hide();
         }
+
+        
     }
 
     private void OnMouseDown()
@@ -189,6 +139,7 @@ public class moleGenerate : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider2D = GetComponent<BoxCollider2D>();
+        hammer.GetComponent <SpriteRenderer>().enabled = false;
         boxOffset = boxCollider2D.offset;
         boxSize = boxCollider2D.size;
         boxOffsetHidden = new Vector2(boxOffset.x, -startPosition.y / 2f);
